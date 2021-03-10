@@ -1,29 +1,32 @@
+// router
 const resourceRouter = require("express").Router();
+
+// utils
+const checkFit = require('../utils/checkFit');
 
 // route
 resourceRouter.route("/").post((req, res) => {
   const { hostType, virtualMachines } = req.body;
-  const totalVMs = virtualMachines.length;
-  let vmServers = [];
-
-  for (let i = 0; i < totalVMs; i++) {
-    let vMachines = [];
-    for (props in hostType) {
-      if (hostType[props] >= virtualMachines[i][props]) {
-        vmServers.push({
-          hostId: i + 1,
-          vMs: vMachines.push(virtualMachines[i]),
-        });
-        hostType[props] -= virtualMachines[i][props];
-      } else {
-        continue;
-      }
-    }
+  let currentHost = { ...hostType };
+  if (virtualMachines.length === 0) {
+    return 0;
   }
-
+  let requiredHost = 1;
+  for (let i = 0; i < virtualMachines.length; i++) {
+    if(!checkFit(virtualMachines[i], hostType)) {
+     continue;
+    }
+     if(!checkFit(virtualMachines[i], currentHost)) {
+      currentHost = { ...hostType };
+      requiredHost++;
+     }
+     for (props in currentHost) {
+       currentHost[props] -= virtualMachines[i][props];
+     }
+  }
   res.json({
-    message: "Created",
-    servers: vmServers,
+    message: "Success",
+    requiredHost,
   });
 });
 

@@ -1,9 +1,14 @@
 #Get Node Image from dockerfile
 FROM node:12-alpine
-WORKDIR index
-COPY package.json ./
+
+WORKDIR /demo
+
+ENV PORT 80
+
+COPY package.json /code/package.json
+
 RUN yarn install
-COPY . .
-EXPOSE 7000
+
+COPY . /code
 
 CMD ["node", "index.js"]
