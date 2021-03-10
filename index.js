@@ -26,4 +26,6 @@ app.use('*', (req, res)=> {
   })
 });
 
-app.listen(port, () => console.log(`Service running on port ${port}`));
+module.exports = app.listen(port, () =>
+  console.log(`Service running on port ${port}`)
+);
